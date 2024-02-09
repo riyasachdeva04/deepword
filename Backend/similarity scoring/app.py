@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 import moviepy.editor as mpy  
 from pytube import YouTube
@@ -20,7 +21,8 @@ import re
 import gensim.downloader as api
 
 app = Flask(__name__)
-
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 OUTPUT_PATH = "downloads"
 
 # Initialize the speech recognizer
@@ -69,8 +71,8 @@ def home():
         return jsonify({'error': 'Channel ID not found'}), 500
     
     # YouTube API setup
-    API_KEY = 'AIzaSyCDWikYjZgY9jlEMVukD3b_L6-G4gc14fs'  # Replace with your API key
-    MAX_RESULTS = 3
+    API_KEY = 'AIzaSyBMOlhsPwMzfGsJnd2rsrmUJFsnY98AWsg' # Replace with your API key
+    MAX_RESULTS = 1
     youtube = build('youtube', 'v3', developerKey=API_KEY)
 
     # Retrieve videos from the specified channel
@@ -92,6 +94,7 @@ def home():
 
     for video_id in video_ids:
         video_url = f'https://www.youtube.com/watch?v={video_id}'
+        print(video_url)
         audio_title = download_audio(video_url)
         
         if audio_title is None:
@@ -186,6 +189,8 @@ def home():
         
 
     return jsonify(most_similar(pairwise_cosine_similarities, jaccard_similarities, wmd))
-
+@app.route('/sayhello', methods=['GET'])
+def say_hello():
+    return 'Hello'
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
