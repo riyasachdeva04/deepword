@@ -1,0 +1,23 @@
+beautifulsoup4
+google-api-python-client
+transformers
+torchaudio
+ffmpeg
+youtube-dl
+pytube
+pydub
+moviepy
+flask
+huggingface_hub[cli]
+SpeechRecognition
+pyttsx3
+python-dotenv
+flask_sqlalchemy
+# brew install flac
+pandas
+numpy
+nltk
+gensim
+scikit-learn
+scipy
+POT
