@@ -4,10 +4,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import time
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+
 
 class YouTubeCrawler:
     def __init__(self):
-        self.driver = webdriver.Chrome()  # You may need to specify the path to your chromedriver executable
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options) # You may need to specify the path to your chromedriver executable
 
     def scroll_down(self):
         # Scroll down the page to load more content

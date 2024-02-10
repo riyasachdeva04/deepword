@@ -4,6 +4,7 @@ class YouTubeSpider(scrapy.Spider):
     name = 'youtube'
     allowed_domains = ['www.youtube.com']
     
+    
     def start_requests(self):
         search_query = input("Enter your YouTube search query: ")
         search_query = search_query.strip().replace(" ", "+")
