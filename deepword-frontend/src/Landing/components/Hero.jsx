@@ -1,14 +1,42 @@
-import * as React from 'react';
+// import * as React from 'react';
+import { useState } from 'react';
 import { alpha } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 export default function Hero() {
+  var [channel, setChannelURL] = useState('')
+  var [searchQuery, setSearchQuery] = useState('')
+  var [loading, setLoading] = useState(false)
+  function sendURLTODB() {
+    setLoading(true)
+    console.log(channel)
+    fetch('https://qgrtr737-5001.euw.devtunnels.ms/', {
+      method: 'POST',
+      // mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({ search_query: searchQuery, api_url: channel }),
+      timeout: 10000000,
+    })
+
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setLoading(false)
+      });
+  }
   return (
     <Box
       id="hero"
@@ -65,20 +93,43 @@ export default function Hero() {
             sx={{ pt: 2, width: { xs: '100%', sm: 'auto' } }}
           >
             <TextField
+              value={channel}
               id="outlined-basic"
               hiddenLabel
               size="small"
               variant="outlined"
-              aria-label="Enter your email address"
-              placeholder="Your email address"
+              aria-label="Enter your youtube channel link"
+              placeholder="Enter your youtube channel link"
               inputProps={{
                 autocomplete: 'off',
-                ariaLabel: 'Enter your email address',
+                ariaLabel: 'Enter your youtube channel link',
+              }}
+              onChange={(e) => {
+                setChannelURL(e.target.value)
+
               }}
             />
-            <Button variant="contained" color="primary">
-              Start now
-            </Button>
+            <TextField
+              value={searchQuery}
+              id="outlined-basic"
+              hiddenLabel
+              size="small"
+              variant="outlined"
+              aria-label="Enter your search query"
+              placeholder="Enter your search query"
+              inputProps={{
+                autocomplete: 'off',
+                ariaLabel: 'Enter your search query',
+              }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+
+              }}
+            />
+            {loading ? <Typography>Loading...</Typography>
+              : <Button variant="contained" color="primary" onClick={sendURLTODB}>
+                Start now
+              </Button>}
           </Stack>
           {/* <Typography variant="caption" textAlign="center" sx={{ opacity: 0.8 }}>
             By clicking &quot;Start now&quot; you agree to our&nbsp;
