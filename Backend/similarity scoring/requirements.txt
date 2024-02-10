@@ -21,3 +21,4 @@ gensim
 scikit-learn
 scipy
 POT
+flask_cors
