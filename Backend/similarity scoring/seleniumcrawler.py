@@ -1,29 +1,21 @@
+from flask import Flask, request, jsonify
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 import time
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
-
+app = Flask(__name__)
 
 class YouTubeCrawler:
     def __init__(self):
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options) # You may need to specify the path to your chromedriver executable
+        self.driver = webdriver.Chrome()  # You may need to specify the path to your chromedriver executable
 
     def scroll_down(self):
         # Scroll down the page to load more content
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)  # Add a small delay to allow content to load
 
-    def crawl(self, search_query):
+    def crawl(self, search_query, api_url):
         url = f"https://www.youtube.com/results?search_query={search_query}"
         self.driver.get(url)
 
@@ -46,15 +38,26 @@ class YouTubeCrawler:
             video_url = link.get_attribute('href')
             if video_url:
                 video_urls.append(video_url)
+                # Send the video URL to the API endpoint
+                response = requests.post(api_url, json={'url': video_url})
+                print(response.text)  # Print the response for debugging
 
         return video_urls
 
     def close(self):
         self.driver.quit()
 
-# Example usage
-search_query = input("Enter your YouTube search query: ")
-crawler = YouTubeCrawler()
-video_urls = crawler.crawl(search_query)
-print(video_urls)
-crawler.close()
+@app.route('/', methods=['POST'])
+def crawl_and_send():
+    data = request.get_json()
+    search_query = data.get('search_query')
+    api_url = data.get('https://9vmh9pwx-5001.inc1.devtunnels.ms/')
+    
+    crawler = YouTubeCrawler()
+    video_urls = crawler.crawl(search_query, api_url)
+    crawler.close()
+    
+    return jsonify({'message': 'Crawling complete and URLs sent to the API.'})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5001)

@@ -18,8 +18,10 @@ from nltk import download
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import gensim.downloader as api
-
+from flask_cors import CORS, cross_origin
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 OUTPUT_PATH = "downloads"
 
@@ -55,8 +57,11 @@ def audio_to_wav(audio_file_path, output_wav_file_path):
 def home():
     if 'url' not in request.json:
         return jsonify({'error': 'URL not provided'}), 400
+    if 'video_url' not in request.json:
+        return jsonify({'error': 'Video URL not provided'}), 400
     
     url = request.json['url']
+    url2 = request.json['video_url']
     
     # Scraping the channel URL to get the channel ID
     response = requests.get(url)
@@ -69,8 +74,8 @@ def home():
         return jsonify({'error': 'Channel ID not found'}), 500
     
     # YouTube API setup
-    API_KEY = 'AIzaSyCDWikYjZgY9jlEMVukD3b_L6-G4gc14fs'  # Replace with your API key
-    MAX_RESULTS = 3
+    API_KEY = 'AIzaSyBMOlhsPwMzfGsJnd2rsrmUJFsnY98AWsg'  # Replace with your API key
+    MAX_RESULTS = 1
     youtube = build('youtube', 'v3', developerKey=API_KEY)
 
     # Retrieve videos from the specified channel
@@ -103,12 +108,12 @@ def home():
         # Convert audio to WAV format
         audio_to_wav(mp3_file, wav_file)
         os.remove(mp3_file)
-
+        
         # Get transcript from the audio
         transcript = get_transcript(wav_file)
         transcripts.append({'video_id': video_id, 'transcript': transcript})
         os.remove(wav_file)
-
+        
     # Preprocess the transcripts
     documents_df = pd.DataFrame(transcripts, columns=['transcript'])
     documents_df['transcript_cleaned'] = documents_df['transcript'].apply(lambda x: " ".join(re.sub(r'\W',' ',w).lower() for w in str(x).split()))
@@ -138,7 +143,14 @@ def home():
     document_vectors = np.array(document_vectors)
 
     # Calculate query vector
-    query_sentence = "i am a young girl, i respect people"
+    url_video_title = download_audio(url2)
+    mp3_file = os.path.join(OUTPUT_PATH, f"{url_video_title}.mp3")
+    wav_file = os.path.join(OUTPUT_PATH, "video_url.wav")
+    audio_to_wav(mp3_file, wav_file)
+    os.remove(mp3_file)
+    query_sentence = get_transcript(wav_file)
+    os.remove(wav_file)
+
     query_vec = np.zeros(100)
     count = 0
     for word in query_sentence.split():
