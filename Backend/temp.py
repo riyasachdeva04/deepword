@@ -1,28 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-import time
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
 app = Flask(__name__)
 cors = CORS(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5673"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
-
-
 class YouTubeCrawler:
     def __init__(self):
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options) # You may need to specify the path to your chromedriver executable
+        self.driver = webdriver.Chrome()  # You may need to specify the path to your chromedriver executable
 
     def scroll_down(self):
         # Scroll down the page to load more content
@@ -52,11 +40,15 @@ class YouTubeCrawler:
             video_url = link.get_attribute('href')
             if video_url:
                 video_urls.append(video_url)
+                # Send the video URL to the API endpoint
+                # response = requests.post(api_url, json={'url': video_url})
+                # print(response.text)  # Print the response for debugging
 
         return video_urls
 
     def close(self):
         self.driver.quit()
+
 @app.route('/', methods=['POST'])
 def crawl_and_send():
     print('req')
@@ -75,25 +67,13 @@ def crawl_and_send():
     crawler.close()
     payload = {
     "url": api_url,
-    "video_url":"https://www.youtube.com/watch?v=92hHiiYxHZ4"
+    "video_url":video_urls[0]
 }
     print(video_urls)
-    response = requests.post('http://localhost:5001', json=payload , timeout= 9000)
+    response = requests.post('https://9vmh9pwx-5001.inc1.devtunnels.ms/', json=payload)
     print(response)
 
     return jsonify({'message': 'Crawling complete and URLs sent to the API.'})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
-
-# Example usage
-# search_query = input("Enter your YouTube search query: ")
-# crawler = YouTubeCrawler()
-# video_urls = crawler.crawl(search_query)
-# print(video_urls)
-# crawler.close()
-# payload = {
-#     "url": "https://www.youtube.com/@Childrenia",
-#     "video_url":"https://www.youtube.com/watch?v=OUZSccFax34"
-# }
-# response = requests.post('http://localhost:5001', json=payload , timeout= 9000)
