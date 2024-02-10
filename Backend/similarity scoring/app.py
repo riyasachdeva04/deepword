@@ -26,7 +26,7 @@ from flask_cors import CORS, cross_origin
 app = Flask(_name_)
 cors = CORS(app)
 sender_email = "lazyblue444@gmail.com"
-receiver_email = "sachdevar919@gmail.com"
+receiver_email = "niosgurpreet@gmail.com"
 password = "qwgd xahk vllt mmil"
 subject = "Deepword Detection results are out!"
 body = ""
@@ -218,7 +218,7 @@ def home():
 
     # Log in to the Gmail account
     server.login(sender_email, password)
-    newMessage = f"The results for your deepfake detection on web using DEEPWORD are out!\nYou got a similarity score for the video taken as input was {message['similarity_score']}\nFollowing was found to be the transcript for the video \n{message['transcript']}"
+    newMessage = f"The results for your deepfake detection on web using DEEPWORD are out!\nYou got a similarity score for the video taken as input was {result['similarity_score']}\nFollowing was found to be the transcript for the video \n{result['transcript']}"
     # Send email
     server.sendmail(sender_email, receiver_email, newMessage)
 
