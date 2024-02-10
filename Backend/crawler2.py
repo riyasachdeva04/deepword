@@ -8,11 +8,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from flask import Flask, request, jsonify
-# from flask_cors import CORS
+from flask_cors import CORS
 import requests
 app = Flask(__name__)
-# cors = CORS(app)
-# app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5673"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
