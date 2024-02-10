@@ -23,7 +23,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask_cors import CORS, cross_origin
-app = Flask(_name_)
+app = Flask(__name__)
 cors = CORS(app)
 sender_email = "lazyblue444@gmail.com"
 receiver_email = "niosgurpreet@gmail.com"
@@ -228,5 +228,5 @@ def home():
     # return jsonify(most_similar(pairwise_cosine_similarities, jaccard_similarities, wmd)[0])
     return jsonify({"Hello":"world"})
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, port=5001)
