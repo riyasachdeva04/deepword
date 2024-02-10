@@ -74,7 +74,7 @@ def crawl_and_send():
     crawler.close()
     payload = {
     "url": api_url,
-    "video_url":"https://www.youtube.com/watch?v=OUZSccFax34"
+    "video_url":"https://www.youtube.com/watch?v=92hHiiYxHZ4"
 }
     print(video_urls)
     response = requests.post('http://localhost:5001', json=payload , timeout= 9000)
