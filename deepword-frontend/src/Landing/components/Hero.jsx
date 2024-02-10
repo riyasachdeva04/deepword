@@ -8,35 +8,42 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
+import axios from  "axios";
 export default function Hero() {
   var [channel, setChannelURL] = useState('')
   var [searchQuery, setSearchQuery] = useState('')
   var [loading, setLoading] = useState(false)
-  function sendURLTODB() {
+ async  function sendURLTODB(){
     setLoading(true)
     console.log(channel)
-    fetch('https://qgrtr737-5001.euw.devtunnels.ms/', {
-      method: 'POST',
-      // mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ search_query: searchQuery, api_url: channel }),
-      timeout: 10000000,
-    })
+    // const controller = new AbortController();
+    // const { signal } = controller;
+    // fetch('https://qgrtr737-5001.euw.devtunnels.ms/', {
+    //   method: 'POST',
+    //   // mode: 'no-cors',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //     // 'Access-Control-Allow-Origin': '*'
+    //   },
+    //   body: JSON.stringify({ search_query: searchQuery, api_url: channel }),
+    //   signal: signal 
+    // })
 
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        setLoading(false)
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        setLoading(false)
-      });
-  }
+      // .then(response => response.json())
+      // .then(data => {
+      //   console.log('Success:', data);
+      //   setLoading(false)
+      // })
+      // .catch((error) => {
+      //   console.error('Error:', error);
+      //   setLoading(false)
+      // });
+
+      var resp = await axios.post("http://localhost:5001",{api_url : channel , search_query : searchQuery}).catch(()=>{print('err')})
+      console.log(resp)
+      setLoading(false)
+      alert('Email sent')
+    }
   return (
     <Box
       id="hero"

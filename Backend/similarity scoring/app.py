@@ -18,16 +18,30 @@ from nltk import download
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import gensim.downloader as api
+import time
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from flask_cors import CORS, cross_origin
-app = Flask(__name__)
+app = Flask(_name_)
 cors = CORS(app)
+sender_email = "lazyblue444@gmail.com"
+receiver_email = "sachdevar919@gmail.com"
+password = "qwgd xahk vllt mmil"
+subject = "Deepword Detection results are out!"
+body = ""
+message = MIMEMultipart()
+message["From"] = sender_email
+message["To"] = receiver_email
+message["Subject"] = subject
+message.attach(MIMEText(body, "plain"))
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 OUTPUT_PATH = "downloads"
 
 # Initialize the speech recognizer
 r = sr.Recognizer()
-
+query_sentence=[]
 def download_audio(url):
     try:
         # Download the audio from the YouTube video
@@ -104,7 +118,7 @@ def home():
         
         mp3_file = os.path.join(OUTPUT_PATH, f"{audio_title}.mp3")
         wav_file = os.path.join(OUTPUT_PATH, "result.wav")
-
+        
         # Convert audio to WAV format
         audio_to_wav(mp3_file, wav_file)
         os.remove(mp3_file)
@@ -184,20 +198,35 @@ def home():
     word_movers_distance = wmd()
     
     # Function to print most similar documents
+    result = []
     def most_similar(similarity_scores, jaccard_similarities, wmd):
-        result = []
+        
         similar_ix = np.argsort(similarity_scores)[::-1]
         for ix in similar_ix:
             result.append({
-                'transcript': documents_df.iloc[ix]['transcript'], 
+                'transcript': query_sentence, 
                 'similarity_score': similarity_scores[ix], 
                 'jaccard_similarity': jaccard_similarities[ix], 
                 'word_movers_distance': word_movers_distance  # Corrected variable name here
             })
         return result
-        
+    result = most_similar(pairwise_cosine_similarities, jaccard_similarities, wmd)[0]
+    print('reached')
+    message.attach(MIMEText(f'{result}', "plain"))
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
 
-    return jsonify(most_similar(pairwise_cosine_similarities, jaccard_similarities, wmd))
+    # Log in to the Gmail account
+    server.login(sender_email, password)
+    newMessage = f"The results for your deepfake detection on web using DEEPWORD are out!\nYou got a similarity score for the video taken as input was {message['similarity_score']}\nFollowing was found to be the transcript for the video \n{message['transcript']}"
+    # Send email
+    server.sendmail(sender_email, receiver_email, newMessage)
 
-if __name__ == '__main__':
+    # Quit the server
+    server.quit()
+    time.sleep(2)
+    # return jsonify(most_similar(pairwise_cosine_similarities, jaccard_similarities, wmd)[0])
+    return jsonify({"Hello":"world"})
+
+if _name_ == '_main_':
     app.run(debug=True, port=5001)
