@@ -20,7 +20,7 @@ export default function Hero() {
     const { signal } = controller;
 
     https://qgrtr737-5001.euw.devtunnels.ms/
-    fetch("http://localhost:5001", {
+    fetch("http://34.121.108.138/", {
       method: "POST",
       // mode: 'no-cors',
       headers: {

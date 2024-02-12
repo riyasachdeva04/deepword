@@ -26,7 +26,7 @@ from flask_cors import CORS, cross_origin
 app = Flask(__name__)
 cors = CORS(app)
 sender_email = "lazyblue444@gmail.com"
-receiver_email = "niosgurpreet@gmail.com"
+receiver_email = "adityaework@gmail.com"
 password = "qwgd xahk vllt mmil"
 subject = "Deepword Detection results are out!"
 body = ""
