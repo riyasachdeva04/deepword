@@ -57,6 +57,7 @@ class YouTubeCrawler:
 
     def close(self):
         self.driver.quit()
+
 @app.route('/', methods=['POST'])
 def crawl_and_send():
     print('req')
@@ -76,9 +77,9 @@ def crawl_and_send():
     payload = {
     "url": api_url,
     "video_url":"https://www.youtube.com/watch?v=92hHiiYxHZ4"
-}
+    }
     print(video_urls)
-    response = requests.post('http://localhost:5001', json=payload , timeout= 9000)
+    response = requests.post('http://localhost:5000', json=payload , timeout= 9000)
     print(response)
 
     return jsonify({'message': 'Crawling complete and URLs sent to the API.'})
